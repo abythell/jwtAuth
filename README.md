@@ -17,26 +17,18 @@ authentication, and where the client making the requests handles OAuth2 sign-in.
 
 ## Installation
 
-Install jwtAuth and fire it up:
-
 ```
 git clone https://github.com/abythell/jwtAuth.git
 cd jwtAuth
 npm install
+cp config.json sample config.json
 ```
 
-Edit `auth.js` and set your Google API client ID, authorized domain, and port,
-then start the service (`node auth.js`, or use pm2 or something fancy).  You can also
-set the port on the command line (`PORT=1234 node auth.js`).
+Edit `config.json` and set your Google API client ID, authorized domain, and port.
+Get or create a client ID via the [Google Cloud Platform](https://console.cloud.google.com/apis).
 
-Then, assuming nginx has the http_auth_request module loaded, add `auth_request localhost:<PORT>`
-to the appropriate `server` block to only allow requests with a valid JWT header.
-Restart nginx and test it out.
+Start the service (`node auth.js`, or use pm2 or something fancy).
 
-## Resources
-
-[Here's a good article](https://developers.shopware.com/blog/2015/03/02/sso-with-nginx-authrequest-module/)
+Then, configure nginx to authorize requests by sending sub-requests to the jwtAuth
+service.  [Here's a good article](https://developers.shopware.com/blog/2015/03/02/sso-with-nginx-authrequest-module/)
 about installing and using the http_auth_request module.
-
-Details about Google JWT and more can be found on their [Google Sign-In for Websites]
-(https://developers.google.com/identity/sign-in/web/backend-auth) page.

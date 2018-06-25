@@ -1,12 +1,9 @@
 const {OAuth2Client} = require('google-auth-library')
 const express = require('express')
+const config = require('./config.json')
 
-/** user-defined settings */
-const port = process.env.PORT || 8080 // set port here or using PORT env. variable
-const CLIENT_ID = 'your-client-id.apps.googleusercontent.com' // create on Google Cloud Platform
-const AUTHORIZED_DOMAIN = 'your-domain.com' // only users signed into this domain will be allowed
-
-let client = new OAuth2Client(CLIENT_ID)
+let port = process.env.PORT || config.port || 8080
+let client = new OAuth2Client(config.clientId)
 let app = express()
 
 app.use('/', (req, res) => {
@@ -14,9 +11,10 @@ app.use('/', (req, res) => {
   if (!authorization) return res.status(400).send('Bad/missing Authorization header.')
   let token = authorization.split(' ')[1] // "Bearer <JWT>"
   if (!token) return res.status(400).send('Invalid Authorization header format.')
-  client.verifyIdToken({idToken: token, audience: CLIENT_ID}).then((ticket) => {
+  client.verifyIdToken({idToken: token, audience: config.clientId}).then((ticket) => {
     let payload = ticket.getPayload()
-    if (payload['hd'] !== AUTHORIZED_DOMAIN) return res.status(401).send('Unauthorized domain.')
+    if (payload['hd'] !== config.domain) return res.status(401).send('Unauthorized domain.')
+    else return res.status(200).send('Authorized')
   }).catch((err) => {
     return res.status(401).send(err.message)
   })
