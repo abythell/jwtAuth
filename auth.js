@@ -8,15 +8,15 @@ let app = express()
 
 app.use('/', (req, res) => {
   let authorization = req.get('Authorization')
-  if (!authorization) return res.status(400).send('Bad/missing Authorization header.')
+  if (!authorization) return res.status(403).send('Bad/missing Authorization header.')
   let token = authorization.split(' ')[1] // "Bearer <JWT>"
-  if (!token) return res.status(400).send('Invalid Authorization header format.')
+  if (!token) return res.status(403).send('Invalid Authorization header format.')
   client.verifyIdToken({idToken: token, audience: config.clientId}).then((ticket) => {
     let payload = ticket.getPayload()
     if (payload['hd'] !== config.domain) return res.status(401).send('Unauthorized domain.')
     else return res.status(200).send('Authorized')
   }).catch((err) => {
-    return res.status(401).send(err.message)
+    return res.status(403).send(err.message)
   })
 })
 
